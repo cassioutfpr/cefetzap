@@ -9,8 +9,12 @@ MenuWindow::MenuWindow(QWidget *parent) :
     ui(new Ui::MenuWindow)
 {
     ui->setupUi(this);
-    //ui->listWidget->setSpacing(10);
-   // ui->listWidget.set
+    font = new QFont( "Sans Serif" );
+    font->setPointSize(10);
+    font->setWeight( QFont::Bold );
+    connect(this, SIGNAL(setNameMessageWindow(QString)), &ind_message_window, SLOT(setNameMessageWindow(QString)));
+    connect(&ind_message_window, SIGNAL(sendMessage(char*)), this, SLOT(sendMessage(char*)));
+    connect(this, SIGNAL(receiveMessage(QString)), &ind_message_window, SLOT(receiveMessage(QString)));
 }
 
 MenuWindow::~MenuWindow()
@@ -22,15 +26,32 @@ void MenuWindow::newLogin(QString login)
 {
     this->login = login;
 
-    ui->listWidget->addItem("Marcos1");
-    ui->listWidget->addItem("Marcos2");
-    ui->listWidget->addItem("Marcos3");
+    ui->label_4->setText("Olá, " + login + ".");
 
-    //QListWidgetItem *item = new QListWidgetItem;
-    //item->setText("Item");
-    //item->
-    //item->setIcon(QIcon("image.png"));
-    //ui->listWidget->insertItem(4,item);
+    //Adding items to qlistWidget.
+    QListWidgetItem *item = new QListWidgetItem();
+    item->setTextColor("#4cff00");
+    item->setFont(*font);
+    item->setText("Maark");
+    ui->listWidget->addItem(item);
+
+    QListWidgetItem *item2 = new QListWidgetItem();
+    item2->setTextColor("#4cff00");
+    item2->setFont(*font);
+    item2->setText("Olavo");
+    ui->listWidget->addItem(item2);
+
+    QListWidgetItem *item3 = new QListWidgetItem();
+    item3->setTextColor("#4cff00");
+    item3->setFont(*font);
+    item3->setText("Show");
+    item3->setTextColor("#ff0004");
+    ui->listWidget->addItem(item3);
+}
+
+void MenuWindow::sendMessage(char* message)
+{
+    socket->write(message);
 }
 
 void MenuWindow::connect_network()
@@ -68,13 +89,18 @@ void MenuWindow::bytesWritten(qint64 bytes)
 void MenuWindow::readyRead()
 {
     qDebug() << "Reading...";
-    qDebug() << socket->readAll();
+    QString message_received = socket->readAll();
+
+    emit receiveMessage(message_received);
 }
 
 void MenuWindow::on_talkButton_clicked()
 {
     connect_network();
-    ui->talkButton->setText(ui->listWidget->currentItem()->text());
+
+    setNameMessageWindow(ui->listWidget->currentItem()->text());
+    ind_message_window.setModal(true);
+    ind_message_window.exec();
 }
 
 void MenuWindow::on_addButton_clicked()
@@ -87,6 +113,7 @@ void MenuWindow::on_addButton_clicked()
             return;
         }
         ui->listWidget_2->addItem(ui->listWidget->currentItem()->text());
+
     }
 }
 

@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QAbstractSocket>
+#include "indmessagewindow.h"
 
 namespace Ui {
 class MenuWindow;
@@ -19,11 +20,14 @@ public:
 
 private:
     Ui::MenuWindow *ui;
+    QFont *font;
     QString login;
     QTcpSocket *socket;
+    IndMessageWindow ind_message_window;
 
 public slots:
     void newLogin(QString login);
+    void sendMessage(char* message);
 private slots:
     void connect_network();
     void connected();
@@ -38,6 +42,8 @@ private slots:
     void on_removeButton_clicked();
 
 signals:
+    void setNameMessageWindow(QString name);
+    void receiveMessage(QString message);
 
 
 };
