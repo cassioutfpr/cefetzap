@@ -28,12 +28,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     menuwindow.cpp \
-    indmessagewindow.cpp
+    indmessagewindow.cpp \
+    user.cpp
 
 HEADERS += \
         mainwindow.h \
     menuwindow.h \
-    indmessagewindow.h
+    indmessagewindow.h \
+    user.h
 
 FORMS += \
         mainwindow.ui \

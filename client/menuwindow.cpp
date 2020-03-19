@@ -2,7 +2,9 @@
 #include "ui_menuwindow.h"
 #include <QDebug>
 #include <QListWidgetItem>
-
+#include <QCloseEvent>
+#include <QNetworkInterface>
+#include <QHostInfo>
 
 MenuWindow::MenuWindow(QWidget *parent) :
     QDialog(parent),
@@ -28,25 +30,22 @@ void MenuWindow::newLogin(QString login)
 
     ui->label_4->setText("Olá, " + login + ".");
 
-    //Adding items to qlistWidget.
-    QListWidgetItem *item = new QListWidgetItem();
-    item->setTextColor("#4cff00");
-    item->setFont(*font);
-    item->setText("Maark");
-    ui->listWidget->addItem(item);
+    User *dumb = new User("Cassio", "127.0.0.1", true);
+    listOfUsers.append(*dumb);
+    //addNewUserToListWidget(*dumb);
 
+
+    User *dumb2 = new User("Cassio2", "127.0.0.1", false);
+    listOfUsers.append(*dumb2);
     QListWidgetItem *item2 = new QListWidgetItem();
     item2->setTextColor("#4cff00");
     item2->setFont(*font);
-    item2->setText("Olavo");
+    item2->setText(dumb2->getName());
+    if(!dumb2->getOnline())
+    {
+        item2->setTextColor("#ff0004");
+    }
     ui->listWidget->addItem(item2);
-
-    QListWidgetItem *item3 = new QListWidgetItem();
-    item3->setTextColor("#4cff00");
-    item3->setFont(*font);
-    item3->setText("Show");
-    item3->setTextColor("#ff0004");
-    ui->listWidget->addItem(item3);
 }
 
 void MenuWindow::sendMessage(char* message)
@@ -98,9 +97,15 @@ void MenuWindow::on_talkButton_clicked()
 {
     connect_network();
 
-    setNameMessageWindow(ui->listWidget->currentItem()->text());
-    ind_message_window.setModal(true);
-    ind_message_window.exec();
+    if(ui->listWidget->selectedItems().size() > 0)
+    {
+        if(checkIfUserOnline(ui->listWidget->currentItem()->text()))
+        {
+            setNameMessageWindow(ui->listWidget->currentItem()->text());
+            ind_message_window.setModal(true);
+            ind_message_window.exec();
+        }
+    }
 }
 
 void MenuWindow::on_addButton_clicked()
@@ -112,16 +117,54 @@ void MenuWindow::on_addButton_clicked()
             if(ui->listWidget_2->item(i)->text() == ui->listWidget->currentItem()->text())
             return;
         }
-        ui->listWidget_2->addItem(ui->listWidget->currentItem()->text());
-
+        QListWidgetItem *item = new QListWidgetItem();
+        item->setTextColor("#4cff00");
+        item->setFont(*font);
+        item->setText(ui->listWidget->currentItem()->text());
+        ui->listWidget_2->addItem(item);
     }
 }
 
 void MenuWindow::on_removeButton_clicked()
 {
-    if(ui->listWidget_2->currentItem()->text() != "")
+    if(ui->listWidget->selectedItems().size() > 0)
     {
         QListWidgetItem *it = ui->listWidget_2->takeItem(ui->listWidget_2->currentRow());
         delete it;
     }
 }
+
+void MenuWindow::closeEvent(QCloseEvent *action)
+{
+    ui->listWidget->clear();
+    ui->listWidget_2->clear();
+    // Do something
+    action->accept();
+}
+
+bool MenuWindow::checkIfUserOnline(QString text)
+{
+    for(int i = 0; i < this->listOfUsers.length(); i++)
+    {
+        if(listOfUsers[i].getName() == text)
+        {
+            if(listOfUsers[i].getOnline())
+                return true;
+        }
+    }
+    return false;
+}
+
+void MenuWindow::addNewUserToListWidget(User newUser)
+{
+    QListWidgetItem *item = new QListWidgetItem();
+    item->setTextColor("#4cff00");
+    item->setFont(*font);
+    item->setText("oie");
+    if(!newUser.getOnline())
+    {
+        item->setTextColor("#ff0004");
+    }
+    ui->listWidget->addItem(item);
+}
+

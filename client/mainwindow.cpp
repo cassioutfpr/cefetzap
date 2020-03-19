@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(this, SIGNAL(newLogin(QString)), &menu_window, SLOT(newLogin(QString)));
-    //QPixmap pix("\images\utfpr.png");
 }
 
 MainWindow::~MainWindow()
@@ -19,7 +18,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    emit newLogin(ui->lineEdit->text());
-    menu_window.setModal(true);
-    menu_window.exec();
+    if(!ui->lineEdit->text().isEmpty())
+    {
+        emit newLogin(ui->lineEdit->text());
+        menu_window.setModal(true);
+        menu_window.exec();
+    }
 }

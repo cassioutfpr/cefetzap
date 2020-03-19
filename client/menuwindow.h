@@ -4,7 +4,9 @@
 #include <QDialog>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QAbstractSocket>
+#include <QListWidgetItem>
 #include "indmessagewindow.h"
+#include "user.h"
 
 namespace Ui {
 class MenuWindow;
@@ -24,9 +26,14 @@ private:
     QString login;
     QTcpSocket *socket;
     IndMessageWindow ind_message_window;
+    void closeEvent(QCloseEvent *action);
+    User mySelf;
+    QList<User> listOfUsers;
 
+    bool checkIfUserOnline(QString text);
 public slots:
     void newLogin(QString login);
+    void addNewUserToListWidget(User newUser);
     void sendMessage(char* message);
 private slots:
     void connect_network();
