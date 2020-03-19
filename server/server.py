@@ -1,8 +1,8 @@
 import socket
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print(f"hostname{socket.gethostname()}")
-s.bind(("127.0.0.1", 80))
+print(f"hostname {socket.gethostname()}")
+s.bind(("localhost", 80))
 s.listen(5)
 
 while True:
