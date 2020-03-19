@@ -6,6 +6,7 @@
 #include <QtNetwork/QAbstractSocket>
 #include <QListWidgetItem>
 #include "indmessagewindow.h"
+#include "groupmessagewindow.h"
 #include "user.h"
 
 namespace Ui {
@@ -25,16 +26,19 @@ private:
     QFont *font;
     QString login;
     QTcpSocket *socket;
-    IndMessageWindow ind_message_window;
-    void closeEvent(QCloseEvent *action);
+    IndMessageWindow indMessageWindow;
+    GroupMessageWindow groupMessageWindow;
+    virtual void closeEvent(QCloseEvent *action);
     User mySelf;
     QList<User> listOfUsers;
 
     bool checkIfUserOnline(QString text);
+    int userIndexFromString(QString name);
 public slots:
     void newLogin(QString login);
     void addNewUserToListWidget(User newUser);
     void sendMessage(char* message);
+    void sendGroupMessage(char* message);
 private slots:
     void connect_network();
     void connected();
@@ -48,9 +52,15 @@ private slots:
 
     void on_removeButton_clicked();
 
+    void on_groupButton_clicked();
+
 signals:
+    //ind
     void setNameMessageWindow(QString name);
     void receiveMessage(QString message);
+    //group
+    void setNameGroupMessageWindow(QString listofUsers);
+    void receiveGroupMessage(QString message);
 
 
 };

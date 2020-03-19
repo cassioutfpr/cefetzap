@@ -1,39 +1,39 @@
-#include "indmessagewindow.h"
-#include "ui_indmessagewindow.h"
-#include <QAbstractScrollArea>
+#include "groupmessagewindow.h"
+#include "ui_groupmessagewindow.h"
 
-IndMessageWindow::IndMessageWindow(QWidget *parent) :
+GroupMessageWindow::GroupMessageWindow(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::IndMessageWindow)
+    ui(new Ui::GroupMessageWindow)
 {
     ui->setupUi(this);
     ui->textEdit->setReadOnly(true);
 }
 
-IndMessageWindow::~IndMessageWindow()
+GroupMessageWindow::~GroupMessageWindow()
 {
     delete ui;
 }
 
-void IndMessageWindow::clearUiAndConversation()
+void GroupMessageWindow::clearUiAndConversation()
 {
     conversation.clear();
     ui->textEdit->clear();
 }
 
-void IndMessageWindow::setNameMessageWindow(QString name)
+void GroupMessageWindow::setNameMessageWindow(QString name)
 {
-    this->name = name;
-    ui->label->setText(name);
+    this->name += name;
+
+    ui->label->setText(this->name);
 }
 
-void IndMessageWindow::receiveMessage(QString message)
+void GroupMessageWindow::receiveMessage(QString message)
 {
     conversation += this->name + ": " + message + "\n";
     ui->textEdit->setText(conversation);
 }
 
-void IndMessageWindow::on_pushButton_clicked()
+void GroupMessageWindow::on_pushButton_clicked()
 {
     if(!ui->lineEdit->text().isEmpty())
     {
