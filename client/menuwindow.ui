@@ -38,9 +38,9 @@ font-color:  black;</string>
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>120</y>
+     <y>160</y>
      <width>180</width>
-     <height>401</height>
+     <height>361</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -69,7 +69,7 @@ border: 2px solid black;
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>100</y>
+     <y>140</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -86,9 +86,9 @@ font-color:black;</string>
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>120</y>
+     <y>160</y>
      <width>180</width>
-     <height>401</height>
+     <height>361</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -137,7 +137,7 @@ font-color:  black;</string>
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>100</y>
+     <y>140</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -168,6 +168,23 @@ font-color:  black;</string>
     <string>&lt;&lt;</string>
    </property>
   </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>100</y>
+     <width>161</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold 16px ;
+font-color:black;</string>
+   </property>
+   <property name="text">
+    <string>fdsfd</string>
+   </property>
+  </widget>
   <zorder>talkButton</zorder>
   <zorder>label</zorder>
   <zorder>label_2</zorder>
@@ -177,6 +194,7 @@ font-color:  black;</string>
   <zorder>groupButton</zorder>
   <zorder>label_3</zorder>
   <zorder>removeButton</zorder>
+  <zorder>label_4</zorder>
  </widget>
  <resources>
   <include location="images.qrc"/>
