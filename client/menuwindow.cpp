@@ -14,9 +14,16 @@ MenuWindow::MenuWindow(QWidget *parent) :
     font = new QFont( "Sans Serif" );
     font->setPointSize(10);
     font->setWeight( QFont::Bold );
-    connect(this, SIGNAL(setNameMessageWindow(QString)), &ind_message_window, SLOT(setNameMessageWindow(QString)));
-    connect(&ind_message_window, SIGNAL(sendMessage(char*)), this, SLOT(sendMessage(char*)));
-    connect(this, SIGNAL(receiveMessage(QString)), &ind_message_window, SLOT(receiveMessage(QString)));
+
+    //ind message window
+    connect(this, SIGNAL(setNameMessageWindow(QString)), &indMessageWindow, SLOT(setNameMessageWindow(QString)));
+    connect(&indMessageWindow, SIGNAL(sendMessage(char*)), this, SLOT(sendMessage(char*)));
+    connect(this, SIGNAL(receiveMessage(QString)), &indMessageWindow, SLOT(receiveMessage(QString)));
+
+    //group message window
+    connect(this, SIGNAL(setNameGroupMessageWindow(QString)), &groupMessageWindow, SLOT(setNameMessageWindow(QString)));
+    connect(&groupMessageWindow, SIGNAL(sendMessage(char*)), this, SLOT(sendGroupMessage(char*)));
+    connect(this, SIGNAL(receiveGroupMessage(QString)), &groupMessageWindow, SLOT(receiveMessage(QString)));
 }
 
 MenuWindow::~MenuWindow()
@@ -32,10 +39,19 @@ void MenuWindow::newLogin(QString login)
 
     User *dumb = new User("Cassio", "127.0.0.1", true);
     listOfUsers.append(*dumb);
+    QListWidgetItem *item = new QListWidgetItem();
+    item->setTextColor("#4cff00");
+    item->setFont(*font);
+    item->setText(dumb->getName());
+    if(!dumb->getOnline())
+    {
+        item->setTextColor("#ff0004");
+    }
+    ui->listWidget->addItem(item);
     //addNewUserToListWidget(*dumb);
 
 
-    User *dumb2 = new User("Cassio2", "127.0.0.1", false);
+    User *dumb2 = new User("Cassio2", "127.0.0.1", true);
     listOfUsers.append(*dumb2);
     QListWidgetItem *item2 = new QListWidgetItem();
     item2->setTextColor("#4cff00");
@@ -51,6 +67,11 @@ void MenuWindow::newLogin(QString login)
 void MenuWindow::sendMessage(char* message)
 {
     socket->write(message);
+}
+
+void MenuWindow::sendGroupMessage(char *message)
+{
+
 }
 
 void MenuWindow::connect_network()
@@ -102,20 +123,21 @@ void MenuWindow::on_talkButton_clicked()
         if(checkIfUserOnline(ui->listWidget->currentItem()->text()))
         {
             setNameMessageWindow(ui->listWidget->currentItem()->text());
-            ind_message_window.setModal(true);
-            ind_message_window.exec();
+            indMessageWindow.setModal(true);
+            indMessageWindow.exec();
+            indMessageWindow.clearUiAndConversation();
         }
     }
 }
 
 void MenuWindow::on_addButton_clicked()
 {
-    if(ui->listWidget->currentItem()->text() != "")
+    if(!ui->listWidget->currentItem()->text().isEmpty() && listOfUsers[userIndexFromString(ui->listWidget->currentItem()->text())].getOnline())
     {
         for(int i = 0; i < ui->listWidget_2->count(); i++)
         {
             if(ui->listWidget_2->item(i)->text() == ui->listWidget->currentItem()->text())
-            return;
+                return;
         }
         QListWidgetItem *item = new QListWidgetItem();
         item->setTextColor("#4cff00");
@@ -168,3 +190,27 @@ void MenuWindow::addNewUserToListWidget(User newUser)
     ui->listWidget->addItem(item);
 }
 
+int MenuWindow::userIndexFromString(QString name)
+{
+    for(int i = 0; i < listOfUsers.length();i++)
+    {
+        if(listOfUsers[i].getName() == name)
+            return i;
+    }
+    return -1;
+}
+
+void MenuWindow::on_groupButton_clicked()
+{
+    if(ui->listWidget_2->count() > 1)
+    {
+        for(int i = 0; i < ui->listWidget_2->count() - 1; i++)
+        {
+            emit setNameGroupMessageWindow(ui->listWidget_2->item(i)->text() + ", ");
+        }
+        emit setNameGroupMessageWindow(ui->listWidget_2->item(ui->listWidget_2->count() - 1)->text());
+        groupMessageWindow.setModal(true);
+        groupMessageWindow.exec();
+        groupMessageWindow.clearUiAndConversation();
+    }
+}

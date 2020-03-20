@@ -14,6 +14,7 @@ class IndMessageWindow : public QDialog
 public:
     explicit IndMessageWindow(QWidget *parent = nullptr);
     ~IndMessageWindow();
+    void clearUiAndConversation();
 
 private:
     Ui::IndMessageWindow *ui;

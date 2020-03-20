@@ -29,18 +29,21 @@ SOURCES += \
         mainwindow.cpp \
     menuwindow.cpp \
     indmessagewindow.cpp \
-    user.cpp
+    user.cpp \
+    groupmessagewindow.cpp
 
 HEADERS += \
         mainwindow.h \
     menuwindow.h \
     indmessagewindow.h \
-    user.h
+    user.h \
+    groupmessagewindow.h
 
 FORMS += \
         mainwindow.ui \
     menuwindow.ui \
-    indmessagewindow.ui
+    indmessagewindow.ui \
+    groupmessagewindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
