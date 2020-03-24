@@ -51,9 +51,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 QT += network
-LIBS += -lws2_32
-win32:LIBS += -lsetupapi
--lWs_2_32
+win32 {
+  LIBS += -lws2_32
+  win32:LIBS += -lsetupapi
+  -lWs_2_32
+}
 
 RESOURCES += \
     images.qrc
