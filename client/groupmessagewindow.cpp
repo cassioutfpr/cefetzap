@@ -41,9 +41,9 @@ void GroupMessageWindow::on_pushButton_clicked()
         ui->textEdit->setText(conversation);
 
         //sending message
-        QByteArray ba = ui->lineEdit->text().toLocal8Bit();
-        char *c_str = ba.data();
-        emit sendMessage(c_str);
+        //QByteArray ba = ui->lineEdit->text().toLocal8Bit();
+        //char *c_str = ba.data();
+        emit sendMessage(ui->lineEdit->text());
 
         ui->lineEdit->setText("");
     }

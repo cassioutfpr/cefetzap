@@ -185,6 +185,24 @@ font-color:black;</string>
     <string>fdsfd</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>100</y>
+     <width>40</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: gray;
+border: 2px solid black;
+</string>
+   </property>
+   <property name="text">
+    <string>refresh</string>
+   </property>
+  </widget>
   <zorder>talkButton</zorder>
   <zorder>label</zorder>
   <zorder>label_2</zorder>
@@ -195,6 +213,7 @@ font-color:black;</string>
   <zorder>label_3</zorder>
   <zorder>removeButton</zorder>
   <zorder>label_4</zorder>
+  <zorder>pushButton</zorder>
  </widget>
  <resources>
   <include location="images.qrc"/>

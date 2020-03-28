@@ -5,11 +5,12 @@ User::User()
 
 }
 
-User::User(QString name, QString ipAddress, bool online)
+User::User(QString name, QString ipAddress, bool online, quint16 port)
 {
     this->name = name;
     this->ipAddress = ipAddress;
     this->online = online;
+    this->port = port;
 }
 
 User::~User()
@@ -45,6 +46,16 @@ bool User::getOnline()
 void User::setOnline(bool isOnline)
 {
     this->online = isOnline;
+}
+
+quint16 User::getPort()
+{
+    return this->port;
+}
+
+void User::setPort(quint16 port)
+{
+    this->port = port;
 }
 
 

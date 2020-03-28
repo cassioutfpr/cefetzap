@@ -26,7 +26,7 @@ private:
     QString name;
     QString conversation;
 signals:
-    void sendMessage(char *message);
+    void sendMessage(QString message);
 };
 
 #endif // GROUPMESSAGEWINDOW_H
