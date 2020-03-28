@@ -28,7 +28,7 @@ private slots:
     void on_pushButton_clicked();
 
 signals:
-    void sendMessage(char *message);
+    void sendMessage(QString message);
 };
 
 #endif // INDMESSAGEWINDOW_H

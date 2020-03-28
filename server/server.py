@@ -31,15 +31,18 @@ print(f'Listening for connections on {IP}:{PORT}...')
 
 
 def receive_message(client_socket, client_address):
-	full_msg = ''
-	length = 0
-	msg = client_socket.recv(3)
-	msg = msg.decode("utf-8")
-	length = int(msg)
-	msg2 = client_socket.recv(length)
-	full_msg += msg2.decode("utf-8")
-	addr_string = str(client_address)
-	return {'addr': addr_string, 'data': full_msg}
+	try:
+		full_msg = ''
+		length = 0
+		msg = client_socket.recv(3)
+		msg = msg.decode("utf-8")
+		length = int(msg)
+		msg2 = client_socket.recv(length)
+		full_msg += msg2.decode("utf-8")
+		addr_string = str(client_address)
+		return {'addr': addr_string, 'data': full_msg}
+	except:
+		return False
 
 while True:
 	# Calls Unix select() system call or Windows select() WinSock call with three parameters:
@@ -82,8 +85,10 @@ while True:
 
 			string_to_send = ""
 			for x in clients.values():
-  				if user['addr'] != x['addr']:
-  					client_socket.send(bytes("Name:"+ x['data'] + "\nIP:" + x['addr'], "utf-8"))
+				if user['addr'] != x['addr']:   #USAR ESSA LINHA SE NÃO QUISER MANDAR O PRÓPRIO NOME E IP, MAS VOU TRATAR ISSO NO QT
+					print(client_socket)
+					print("Name:"+ x['data'] + "IP:" + x['addr'])
+					client_socket.send(bytes("Name:"+ x['data'] + "IP:" + x['addr'] + "|", "utf-8"))
 
 		# Else existing socket is sending a message
 		else:

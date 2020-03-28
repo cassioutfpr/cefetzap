@@ -34,11 +34,14 @@ private:
 
     bool checkIfUserOnline(QString text);
     int userIndexFromString(QString name);
+    bool receiveListOfUsersOnline;
+
+    void receiveListOfUsers(QString messageReceived);
 public slots:
     void newLogin(QString login);
     void addNewUserToListWidget(User newUser);
-    void sendMessage(char* message);
-    void sendGroupMessage(char* message);
+    void sendMessage(QString message);
+    void sendGroupMessage(QString message);
 private slots:
     void connect_network();
     void connected();
@@ -53,6 +56,8 @@ private slots:
     void on_removeButton_clicked();
 
     void on_groupButton_clicked();
+
+    void on_pushButton_clicked();
 
 signals:
     //ind
