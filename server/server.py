@@ -97,6 +97,7 @@ while True:
 					#print(client_socket)
 					#print("Name:"+ x['data'] + "IP:" + x['addr'])
 					string_to_send += "Name:"+ x['data'] + "IP:" + x['addr'] + "|"
+			print(string_to_send)
 			client_socket.send(bytes(string_to_send, "utf-8"))
 
 		# Else existing socket is sending a message
@@ -124,18 +125,10 @@ while True:
 
 			if isReceivingListOfUsers == "1":
 	            # Iterate over connected clients and broadcast message
+				print(usersToSend)
 				for client_socket in clients:
 	                # But don't sent it to sender
 					if client_socket != notified_socket:
-						print(clients[client_socket]['data'])
 						for name in usersToSend:
 							if clients[client_socket]['data'] == name:
 								client_socket.send(bytes(message['data'], "utf-8"))
-						#for x in clients[client_socket].values():
-						#	print(x)
-							#for y in range(len(usersToSend)):  
-							#	if usersToSend[y] == x['data']:
-							#		print(x['data'])
-							#		print(message['data'])
-							#		client_socket.send(bytes(message['data'], "utf-8"))
-						
