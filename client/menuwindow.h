@@ -8,6 +8,7 @@
 #include "indmessagewindow.h"
 #include "groupmessagewindow.h"
 #include "user.h"
+#include <QTimer>
 
 namespace Ui {
 class MenuWindow;
@@ -31,16 +32,22 @@ private:
     virtual void closeEvent(QCloseEvent *action);
     User mySelf;
     QList<User> listOfUsers;
+    QTimer *timer;
+    int timerId;
 
     bool checkIfUserOnline(QString text);
     int userIndexFromString(QString name);
     bool receiveListOfUsersOnline;
+    //bool sendListOfGroupUsersToServer;
 
     void receiveListOfUsers(QString messageReceived);
+
+    void sendMessageToDialogs(QString messageReceived);
 public slots:
     void newLogin(QString login);
     void sendMessage(QString message);
-    void sendGroupMessage(QString message);
+    void sendGroupMessage(QString message, bool sendListOfGroupUsersToServer);
+    void MyTimerSlot();
 private slots:
     void connect_network();
     void connected();
@@ -64,9 +71,12 @@ signals:
     void receiveMessage(QString message);
     //group
     void setNameGroupMessageWindow(QString listofUsers);
-    void receiveGroupMessage(QString message);
+    void receiveGroupMessage(QString message, QString whoSaid);
 
+    void teste();
 
+protected:
+    void timerEvent(QTimerEvent *event);
 };
 
 #endif // MENUWINDOW_H

@@ -18,6 +18,7 @@ void GroupMessageWindow::clearUiAndConversation()
 {
     conversation.clear();
     ui->textEdit->clear();
+    this->name = "";
 }
 
 void GroupMessageWindow::setNameMessageWindow(QString name)
@@ -27,9 +28,9 @@ void GroupMessageWindow::setNameMessageWindow(QString name)
     ui->label->setText(this->name);
 }
 
-void GroupMessageWindow::receiveMessage(QString message)
+void GroupMessageWindow::receiveMessage(QString message, QString whoSaid)
 {
-    conversation += this->name + ": " + message + "\n";
+    conversation += whoSaid + ": " + message + "\n";
     ui->textEdit->setText(conversation);
 }
 
@@ -43,7 +44,8 @@ void GroupMessageWindow::on_pushButton_clicked()
         //sending message
         //QByteArray ba = ui->lineEdit->text().toLocal8Bit();
         //char *c_str = ba.data();
-        emit sendMessage(ui->lineEdit->text());
+        emit sendMessage(this->name, true);
+        emit sendMessage(ui->lineEdit->text(), false);
 
         ui->lineEdit->setText("");
     }

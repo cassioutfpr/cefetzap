@@ -2,6 +2,7 @@
 #define GROUPMESSAGEWINDOW_H
 
 #include <QDialog>
+#include <QCloseEvent>
 
 namespace Ui {
 class GroupMessageWindow;
@@ -18,7 +19,7 @@ public:
 
 public slots:
     void setNameMessageWindow(QString name);
-    void receiveMessage(QString message);
+    void receiveMessage(QString message, QString whoSaid);
 private slots:
     void on_pushButton_clicked();
 private:
@@ -26,7 +27,7 @@ private:
     QString name;
     QString conversation;
 signals:
-    void sendMessage(QString message);
+    void sendMessage(QString message, bool sendListOfGroupUsersToServer);
 };
 
 #endif // GROUPMESSAGEWINDOW_H

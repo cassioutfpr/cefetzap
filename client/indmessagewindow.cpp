@@ -33,6 +33,11 @@ void IndMessageWindow::receiveMessage(QString message)
     ui->textEdit->setText(conversation);
 }
 
+void IndMessageWindow::teste()
+{
+    this->exec();
+}
+
 void IndMessageWindow::on_pushButton_clicked()
 {
     if(!ui->lineEdit->text().isEmpty())

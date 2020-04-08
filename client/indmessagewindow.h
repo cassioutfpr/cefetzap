@@ -15,15 +15,16 @@ public:
     explicit IndMessageWindow(QWidget *parent = nullptr);
     ~IndMessageWindow();
     void clearUiAndConversation();
+    QString name;
 
 private:
     Ui::IndMessageWindow *ui;
-    QString name;
     QString conversation;
 
 public slots:
     void setNameMessageWindow(QString name);
     void receiveMessage(QString message);
+    void teste();
 private slots:
     void on_pushButton_clicked();
 
