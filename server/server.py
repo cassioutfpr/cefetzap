@@ -29,16 +29,24 @@ clients = {}
 
 print(f'Listening for connections on {IP}:{PORT}...')
 
+usersToSend = []
+isReceivingListOfUsers = "0"
 
 def receive_message(client_socket, client_address):
 	try:
+		global usersToSend
+		global isReceivingListOfUsers
 		full_msg = ''
 		length = 0
+		isReceivingListOfUsers = client_socket.recv(1)
+		isReceivingListOfUsers = isReceivingListOfUsers.decode("utf-8")
 		msg = client_socket.recv(3)
 		msg = msg.decode("utf-8")
 		length = int(msg)
 		msg2 = client_socket.recv(length)
 		full_msg += msg2.decode("utf-8")
+		if isReceivingListOfUsers == "0":
+			usersToSend = full_msg.split("|")
 		addr_string = str(client_address)
 		return {'addr': addr_string, 'data': full_msg}
 	except:
@@ -86,9 +94,11 @@ while True:
 			string_to_send = ""
 			for x in clients.values():
 				if user['addr'] != x['addr']:   #USAR ESSA LINHA SE NÃO QUISER MANDAR O PRÓPRIO NOME E IP, MAS VOU TRATAR ISSO NO QT
-					print(client_socket)
-					print("Name:"+ x['data'] + "IP:" + x['addr'])
-					client_socket.send(bytes("Name:"+ x['data'] + "IP:" + x['addr'] + "|", "utf-8"))
+					#print(client_socket)
+					#print("Name:"+ x['data'] + "IP:" + x['addr'])
+					string_to_send += "Name:"+ x['data'] + "IP:" + x['addr'] + "|"
+			print(string_to_send)
+			client_socket.send(bytes(string_to_send, "utf-8"))
 
 		# Else existing socket is sending a message
 		else:
@@ -113,12 +123,12 @@ while True:
 
 			print(f'Received message from {user["data"]}: {message["data"]}')
 
-            # Iterate over connected clients and broadcast message
-			for client_socket in clients:
-
-                # But don't sent it to sender
-				if client_socket != notified_socket:
-
-                    # Send user and message (both with their headers)
-                    # We are reusing here message header sent by sender, and saved username header send by user when he connected
-					client_socket.send(bytes(message['data'], "utf-8"))
+			if isReceivingListOfUsers == "1":
+	            # Iterate over connected clients and broadcast message
+				print(usersToSend)
+				for client_socket in clients:
+	                # But don't sent it to sender
+					if client_socket != notified_socket:
+						for name in usersToSend:
+							if clients[client_socket]['data'] == name:
+								client_socket.send(bytes(message['data'], "utf-8"))

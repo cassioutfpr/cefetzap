@@ -69,9 +69,12 @@ void MenuWindow::sendGroupMessage(QString message)
         s = "0" + std::to_string(message.length());
     else
         s = std::to_string(message.length());
+    if(receiveListOfUsersOnline)
+        s = "0" + s;
+    else
+        s = "1" + s;
     char const *pchar = s.c_str();  //use char const* as target type
     socket->write(pchar);
-    //message = "1" + message;
     QByteArray ba = message.toLocal8Bit();
     char *c_str = ba.data();
     socket->write(c_str);
@@ -87,8 +90,10 @@ void MenuWindow::connect_network()
     qDebug() << "Connecting...";
     socket->connectToHost("127.0.0.1", 1234);
 
+
     if(!socket->waitForConnected(1000))
         qDebug() << "Error: " << socket->errorString();
+    qWarning() << "aqui2";
 }
 
 void MenuWindow::connected()
@@ -101,6 +106,7 @@ void MenuWindow::connected()
         s = "0" + std::to_string(this->login.length());
     else
         s = std::to_string(this->login.length());
+    s = "1" + s;
     char const *pchar = s.c_str();  //use char const* as target type
     socket->write(pchar);
     QByteArray ba = this->login.toLocal8Bit();
@@ -120,7 +126,7 @@ void MenuWindow::bytesWritten(qint64 bytes)
 
 void MenuWindow::readyRead()
 {
-    qDebug() << "Reading...";
+    qWarning() << "Reading...";
     QString message_received = socket->readAll();
     if(receiveListOfUsersOnline){
         receiveListOfUsers(message_received);
@@ -177,10 +183,6 @@ void MenuWindow::closeEvent(QCloseEvent *action)
     ui->listWidget->clear();
     ui->listWidget_2->clear();
     socket->disconnectFromHost();
-    socket->disconnect();
-    socket->flush();
-    //socket->close();
-    //socket = NULL;AAAAAAAAAAh vai tomar no cu
     // Do something
     action->accept();
 }
@@ -198,19 +200,6 @@ bool MenuWindow::checkIfUserOnline(QString text)
     return false;
 }
 
-void MenuWindow::addNewUserToListWidget(User newUser)
-{
-    QListWidgetItem *item = new QListWidgetItem();
-    item->setTextColor("#4cff00");
-    item->setFont(*font);
-    item->setText("oie");
-    if(!newUser.getOnline())
-    {
-        item->setTextColor("#ff0004");
-    }
-    ui->listWidget->addItem(item);
-}
-
 int MenuWindow::userIndexFromString(QString name)
 {
     for(int i = 0; i < listOfUsers.length();i++)
@@ -225,7 +214,7 @@ void MenuWindow::receiveListOfUsers(QString messageReceived)
 {
     QStringList pieces = messageReceived.split( "|" );
     QString ind_user;
-    listOfUsers.clear();
+    //listOfUsers.clear();
     if(pieces.isEmpty())
         return;
     for(int i = 0; i < pieces.length(); i++)
@@ -243,11 +232,14 @@ void MenuWindow::receiveListOfUsers(QString messageReceived)
             qDebug() << "Ports: " << ip.right(ip.length() - ip.indexOf(",")-2);
             if(QString::compare(name, this->login, Qt::CaseInsensitive) == 0)
                 return;
-            //for(int i = 0; i < listOfUsers.length();i++)
-            //{
-            //    if(listOfUsers[i].getName() == name)
-            //        return;
-            //}
+            bool success = true;
+            for(int i = 0; i < listOfUsers.length();i++)
+            {
+                if(listOfUsers[i].getName() == name)
+                    success = false;
+            }
+            if(!success)
+                continue;
 
             User *dumb = new User();
             dumb->setName(name);
@@ -271,13 +263,17 @@ void MenuWindow::receiveListOfUsers(QString messageReceived)
 
 void MenuWindow::on_groupButton_clicked()
 {
-    if(ui->listWidget_2->count() > 1)
+    QString users_to_group_message;
+    if(ui->listWidget_2->count() >= 1)
     {
         for(int i = 0; i < ui->listWidget_2->count() - 1; i++)
         {
             emit setNameGroupMessageWindow(ui->listWidget_2->item(i)->text() + ", ");
+            users_to_group_message = ui->listWidget_2->item(i)->text() + "|";
         }
         emit setNameGroupMessageWindow(ui->listWidget_2->item(ui->listWidget_2->count() - 1)->text());
+        users_to_group_message += ui->listWidget_2->item(ui->listWidget_2->count() - 1)->text();
+        sendGroupMessage(users_to_group_message);
         receiveListOfUsersOnline = false;
         groupMessageWindow.setModal(true);
         groupMessageWindow.exec();
@@ -291,7 +287,12 @@ void MenuWindow::on_pushButton_clicked()
     socket->disconnectFromHost();
     qDebug() << "Connecting...";
     socket->connectToHost("127.0.0.1", 1234);
-
+    qWarning() << "aqui1";
+    //listOfUsers.clear();
+    //ui->listWidget->clear();
+    //ui->listWidget_2->clear();
+    qWarning() << "aqui2";
     if(!socket->waitForConnected(1000))
         qDebug() << "Error: " << socket->errorString();
+    qWarning() << "aqui3";
 }

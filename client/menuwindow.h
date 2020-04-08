@@ -39,7 +39,6 @@ private:
     void receiveListOfUsers(QString messageReceived);
 public slots:
     void newLogin(QString login);
-    void addNewUserToListWidget(User newUser);
     void sendMessage(QString message);
     void sendGroupMessage(QString message);
 private slots:
