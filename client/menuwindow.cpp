@@ -16,6 +16,17 @@ MenuWindow::MenuWindow(QWidget *parent) :
     font->setPointSize(10);
     font->setWeight( QFont::Bold );
 
+    // create a timer
+    //timerId = startTimer(1000);
+    timer = new QTimer(this);
+
+    // setup signal and slot
+    connect(timer, SIGNAL(timeout()),
+          this, SLOT(MyTimerSlot()));
+
+    // msec
+
+
     //ind message window
     connect(this, SIGNAL(setNameMessageWindow(QString)), &indMessageWindow, SLOT(setNameMessageWindow(QString)));
     connect(&indMessageWindow, SIGNAL(sendMessage(QString)), this, SLOT(sendMessage(QString)));
@@ -23,8 +34,10 @@ MenuWindow::MenuWindow(QWidget *parent) :
 
     //group message window
     connect(this, SIGNAL(setNameGroupMessageWindow(QString)), &groupMessageWindow, SLOT(setNameMessageWindow(QString)));
-    connect(&groupMessageWindow, SIGNAL(sendMessage(QString)), this, SLOT(sendGroupMessage(QString)));
-    connect(this, SIGNAL(receiveGroupMessage(QString)), &groupMessageWindow, SLOT(receiveMessage(QString)));
+    connect(&groupMessageWindow, SIGNAL(sendMessage(QString, bool)), this, SLOT(sendGroupMessage(QString, bool)));
+    connect(this, SIGNAL(receiveGroupMessage(QString,QString)), &groupMessageWindow, SLOT(receiveMessage(QString,QString)));
+
+    connect(this, SIGNAL(teste()), &indMessageWindow, SLOT(teste()));
 
     receiveListOfUsersOnline = true;
 }
@@ -60,7 +73,7 @@ void MenuWindow::sendMessage(QString message)
     socket->write(c_str);
 }
 
-void MenuWindow::sendGroupMessage(QString message)
+void MenuWindow::sendGroupMessage(QString message,  bool sendListOfGroupUsersToServer)
 {
     std::string s;
     if(message.length()/10 == 0)
@@ -69,7 +82,7 @@ void MenuWindow::sendGroupMessage(QString message)
         s = "0" + std::to_string(message.length());
     else
         s = std::to_string(message.length());
-    if(receiveListOfUsersOnline)
+    if(sendListOfGroupUsersToServer)
         s = "0" + s;
     else
         s = "1" + s;
@@ -78,6 +91,13 @@ void MenuWindow::sendGroupMessage(QString message)
     QByteArray ba = message.toLocal8Bit();
     char *c_str = ba.data();
     socket->write(c_str);
+}
+
+void MenuWindow::MyTimerSlot()
+{
+    receiveListOfUsersOnline = false;
+    qWarning() << "ENTROU";
+    timer->stop();
 }
 
 void MenuWindow::connect_network()
@@ -94,6 +114,10 @@ void MenuWindow::connect_network()
     if(!socket->waitForConnected(1000))
         qDebug() << "Error: " << socket->errorString();
     qWarning() << "aqui2";
+
+    // create a timer
+    //timerId = startTimer(5000);
+    timer->start(5000);
 }
 
 void MenuWindow::connected()
@@ -132,8 +156,8 @@ void MenuWindow::readyRead()
         receiveListOfUsers(message_received);
         return;
     }
-
-    emit receiveMessage(message_received);
+    sendMessageToDialogs(message_received);
+    //emit receiveMessage(message_received);
 }
 
 void MenuWindow::on_talkButton_clicked()
@@ -148,6 +172,7 @@ void MenuWindow::on_talkButton_clicked()
             indMessageWindow.exec();
             indMessageWindow.clearUiAndConversation();
             receiveListOfUsersOnline = true;
+            timer->start(1000);
         }
     }
 }
@@ -214,9 +239,6 @@ void MenuWindow::receiveListOfUsers(QString messageReceived)
 {
     QStringList pieces = messageReceived.split( "|" );
     QString ind_user;
-    //listOfUsers.clear();
-    if(pieces.isEmpty())
-        return;
     for(int i = 0; i < pieces.length(); i++)
     {
         ind_user = pieces.value( pieces.length() -1 -i);
@@ -261,24 +283,84 @@ void MenuWindow::receiveListOfUsers(QString messageReceived)
     }
 }
 
+void MenuWindow::sendMessageToDialogs(QString messageReceived)
+{
+    QStringList pieces = messageReceived.split( "|" );
+    QString ind_user;
+    qWarning() << "Message Received: " << messageReceived;
+    if(pieces.isEmpty())
+        return;
+    QString who_sent = pieces.value(0);
+    qWarning() << "who sent:" << who_sent;
+    QString payload_message = pieces.value(pieces.length()-1);
+    qWarning() << "Payload: " << payload_message;
+    QString users_to_group_message;
+
+    if(pieces.length() == 3)
+    {
+        qWarning() << "IF";
+        ind_user = pieces.value(1);
+        if(indMessageWindow.isVisible())
+        {
+            qWarning() << "isVisible";
+            if(indMessageWindow.name == ind_user)
+            {
+                emit sendMessage(payload_message);
+            }else{
+                return;
+            }
+        }else{
+            qWarning() << "notVisible";
+            indMessageWindow.open();
+            emit setNameMessageWindow(ind_user);
+            emit receiveMessage(payload_message);
+        }
+    }else{
+        qWarning() << "ELSE";
+        for(int i = 1; i < pieces.length() -1; i++)
+        {
+            if(pieces.value(pieces.length()-1-i) != this->login)
+                users_to_group_message += pieces.value(pieces.length()-1-i) + "|";
+            qWarning() << "users: " << users_to_group_message;
+        }
+        if(pieces.value(0) != this->login)
+            users_to_group_message += pieces.value(0);
+        if(groupMessageWindow.isVisible())
+        {
+            qWarning() << "isVisible";
+            //sendListOfGroupUsersToServer = false;
+             emit receiveGroupMessage(payload_message,who_sent);
+        }else{
+            qWarning() << "notVisible";
+            groupMessageWindow.clearUiAndConversation();
+            emit setNameGroupMessageWindow(users_to_group_message);
+            emit receiveGroupMessage(payload_message,who_sent);
+            groupMessageWindow.open();
+            //sendListOfGroupUsersToServer = false;
+        }
+    }
+}
+
 void MenuWindow::on_groupButton_clicked()
 {
     QString users_to_group_message;
-    if(ui->listWidget_2->count() >= 1)
+    if(ui->listWidget_2->count() > 1)
     {
+        groupMessageWindow.clearUiAndConversation();
         for(int i = 0; i < ui->listWidget_2->count() - 1; i++)
         {
-            emit setNameGroupMessageWindow(ui->listWidget_2->item(i)->text() + ", ");
+            emit setNameGroupMessageWindow(ui->listWidget_2->item(i)->text() + "|");
             users_to_group_message = ui->listWidget_2->item(i)->text() + "|";
         }
         emit setNameGroupMessageWindow(ui->listWidget_2->item(ui->listWidget_2->count() - 1)->text());
         users_to_group_message += ui->listWidget_2->item(ui->listWidget_2->count() - 1)->text();
-        sendGroupMessage(users_to_group_message);
+        sendGroupMessage(users_to_group_message, true);
         receiveListOfUsersOnline = false;
         groupMessageWindow.setModal(true);
         groupMessageWindow.exec();
         groupMessageWindow.clearUiAndConversation();
         receiveListOfUsersOnline = true;
+        timer->start(1000);
     }
 }
 
@@ -287,12 +369,15 @@ void MenuWindow::on_pushButton_clicked()
     socket->disconnectFromHost();
     qDebug() << "Connecting...";
     socket->connectToHost("127.0.0.1", 1234);
-    qWarning() << "aqui1";
-    //listOfUsers.clear();
-    //ui->listWidget->clear();
-    //ui->listWidget_2->clear();
-    qWarning() << "aqui2";
-    if(!socket->waitForConnected(1000))
+
+    if(!socket->waitForConnected(5000))
         qDebug() << "Error: " << socket->errorString();
-    qWarning() << "aqui3";
+    receiveListOfUsersOnline = true;
+    timer->start(1000);
+}
+
+void MenuWindow::timerEvent(QTimerEvent *event)
+{
+    receiveListOfUsersOnline = false;
+    qWarning() << "ENTROOOOO";
 }

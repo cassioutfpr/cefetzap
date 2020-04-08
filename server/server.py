@@ -47,6 +47,7 @@ def receive_message(client_socket, client_address):
 		full_msg += msg2.decode("utf-8")
 		if isReceivingListOfUsers == "0":
 			usersToSend = full_msg.split("|")
+			print(usersToSend)
 		addr_string = str(client_address)
 		return {'addr': addr_string, 'data': full_msg}
 	except:
@@ -127,8 +128,13 @@ while True:
 	            # Iterate over connected clients and broadcast message
 				print(usersToSend)
 				for client_socket in clients:
+					message_header = user["data"]
 	                # But don't sent it to sender
 					if client_socket != notified_socket:
 						for name in usersToSend:
+							message_header += "|" + name
+						for name in usersToSend:
 							if clients[client_socket]['data'] == name:
-								client_socket.send(bytes(message['data'], "utf-8"))
+								client_socket.send(bytes(message_header + "|" + message['data'], "utf-8"))
+								print("message header: " + message_header)
+								print("Sent message: " + message_header + "|" + message['data'])

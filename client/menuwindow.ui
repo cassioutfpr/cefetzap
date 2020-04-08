@@ -182,7 +182,7 @@ font-color:  black;</string>
 font-color:black;</string>
    </property>
    <property name="text">
-    <string>fdsfd</string>
+    <string/>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton">
@@ -195,12 +195,22 @@ font-color:black;</string>
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: gray;
+    <string notr="true">background-color: rgb(171, 171, 171);
 border: 2px solid black;
 </string>
    </property>
    <property name="text">
-    <string>refresh</string>
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/images/refresh.png</normaloff>:/images/images/refresh.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
    </property>
   </widget>
   <zorder>talkButton</zorder>
